@@ -6,55 +6,51 @@ function randomInt(min, max){
   return Math.round(Math.random()*(max-min) + min);
 }
 
-function htmlTerm(coefficient, degree){
-  //setup
-  var result = "";
-  var abscoef = Math.abs(coefficient);
 
-  //finishes if the coefficient is 0
-  if (coefficient == 0) return result;
+function writeLaTexTerm(coefficient, variable, exponent){
+    //setup
+    var result;
+    var abscoef = typeof(coefficient) == "number"? Math.abs(coefficient) : coefficient;
 
-  //writes sign
-  if (coefficient < 0) result = "-";
-  else result = "+";
+    //finishes if the coefficient is 0
+    if (coefficient == 0) return "";
 
-  //adds a space after the sign
-  result += ' ';
+    //writes sign
+    if (typeof(coefficient) == "number" && coefficient < 0) result = "-";
+    else result = "+";
 
-  //writes coefficient
-  if (abscoef != 1 || degree == 0) result += String(abscoef);
+    //writes coefficient
+    if (abscoef != 1 || exponent == 0) result += String(abscoef);
 
-  //finishes if the degree is 0
-  if (degree == 0) return result;
+    //finishes if the exponent is 0
+    if (exponent == 0) return result;
 
-  //adds the variable
-  result += 'x';
+    //adds variable
+    result += variable;
 
-  //finishes if the degree is 1
-  if (degree == 1) return result;
+    //finishes if exponent is 1
+    if (exponent == 1) return result;
 
-  //writes the power
-  result += "<sup>" + degree + "</sup>"
+    //adds the exponent
+    result += "^{" + exponent + "}";
 
-  //finishes
-  return result;
+    //finishes
+    return result;
 }
 
-function htmlPolynomial(coefficients){
+function writeLaTexPolynomial(coefficients, x, y){
   var result = "";
-  for (degree = 0; degree < coefficients.length; degree++){
-    result = ' ' + htmlTerm(coefficients[degree], degree) + result;
-  }
-  result = result.substr(1);
-  if (result[0] == '+') result = result.substr(2);
-  result = "<code><i>y = " + result + "</i></code>"
+  for(n = 0; n < coefficients.length; n++) result = writeLaTexTerm(coefficients[n], x, n) + result;
+  if (result[0] == "+") result = result.substr(1);
+  result = y + '=' + result;
   return result;
 }
 
 function Polynomial(coefficients){
   this.coefficients = coefficients;
-  this.toHTML = function(){
-    return htmlPolynomial(coefficients);
+  this.degree = coefficients.length - 1;
+  this.toLaTex = function(){
+    return writeLaTexPolynomial(coefficients, 'x', "f(x)");
   }
   this.f = function(x){
     var result = 0;
@@ -65,13 +61,14 @@ function Polynomial(coefficients){
   }
 }
 
-function generateRandomPolynomialEquation(){
-  var degree = randomInt(2,5);
+function generateRandomPolynomialEquation(min_degree, max_degree){
+  var degree = randomInt(min_degree, max_degree);
   var coefficients = [];
   for(i = 0; i <= degree; i++){
-    coefficients[i] = randomInt(0,10);
+    coefficients[i] = randomInt(-10, 10);
   }
-  return new Polynomial(coefficients);
+  if (coefficients[degree] == 0) return generateRandomPolynomialEquation();
+  else return new Polynomial(coefficients);
 }
 
 function differences(ns){
@@ -89,24 +86,19 @@ function isEqualList(list){
   return true;
 }
 
-function Coordinate(x,y){
-  this.x = x;
-  this.y = y;
-}
-
-function FiniteDifferencesProblem(equation, x_values){
+function FiniteDifferencesProblem(equation, delta_x){
   this.equation = equation;
-  this.x_values = x_values;
-  this.y_values = x_values.map(this.equation.f);
+  this.delta_x = delta_x;
+  this.x_values = [];
+  for (i = -3; i <= 3; i++) this.x_values.push(delta_x*i);
+  this.y_values = this.x_values.map(this.equation.f);
   this.differences = [differences(this.y_values)];
   while(!isEqualList(this.differences[this.differences.length - 1])){
     this.differences.push(differences(this.differences[this.differences.length - 1]));
   }
 }
 
-function generateRandomFiniteDifferencesProblem(){
+function generateRandomFiniteDifferencesProblem(min_degree, max_degree){
   var delta_x = randomInt(1,3);
-  var x_values = [];
-  for (i = -3; i <= 3; i++) x_values.push(delta_x*i);
-  return new FiniteDifferencesProblem(generateRandomPolynomialEquation(), x_values);
+  return new FiniteDifferencesProblem(generateRandomPolynomialEquation(min_degree, max_degree), delta_x);
 }
