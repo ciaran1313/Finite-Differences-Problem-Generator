@@ -3,9 +3,19 @@
 <head>
   <title>Finite Differences Generator</title>
   <link rel="stylesheet" type="text/css" href="fd.css">
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  <script type="text/javascript" src="fd.js"></script>
-  <script type="text/javascript" src="DOM.js"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    MathJax.Hub.Config({
+      jax: ["input/TeX","output/HTML-CSS"],
+      displayAlign: "left"
+    });
+  </script>
+  <script type="text/javascript" src="latex.js"></script>
+  <script type="text/javascript" src="polynomial.js"></script>
+  <script type="text/javascript" src="finite-differences-problem.js"></script>
+  <script type="text/javascript" src="random-generation.js"></script>
+  <script type="text/javascript" src="custom-math.js"></script>
+  <script type="text/javascript" src="display.js"></script>
+  <script type="text/javascript" src="steps.js"></script>
 </head>
 <body>
   <div id="equation"></div>
