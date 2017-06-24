@@ -7,9 +7,3 @@ table, th, tr, td{
 th{
   font-style: italic;
 }
-
-#steps{
-  font-style: oblique;
-  font-weight: bold;
-  font-family: "Monaco";
-}
